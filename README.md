@@ -21,6 +21,7 @@
 ## 功能特性
 
 - **多协议支持** - OpenAI / Anthropic / Gemini 三种协议兼容
+- **工具调用支持** - 支持 Claude Code 的工具调用功能 (v1.1.0+)
 - **多账号轮询** - 支持添加多个 Kiro 账号，自动负载均衡
 - **会话粘性** - 同一会话 60 秒内使用同一账号，保持上下文
 - **429 自动切换** - 遇到限流自动切换到其他可用账号
@@ -48,8 +49,11 @@ source venv/bin/activate  # Windows: venv\Scripts\activate
 # 安装依赖
 pip install -r requirements.txt
 
-# 运行
-python app.py
+# 运行 (新版)
+python run.py
+
+# 或指定端口
+python run.py 8081
 ```
 
 启动后访问 http://localhost:8000
