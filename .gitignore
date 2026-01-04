@@ -29,7 +29,8 @@ Thumbs.db
 *.log
 
 # Test files
-*.txt
+[0-9].txt
+线索*.txt
 
 # Other projects
 Antigravity-Manager/
