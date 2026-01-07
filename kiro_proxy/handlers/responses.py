@@ -493,16 +493,17 @@ async def handle_responses(request: Request):
         tool_results=tool_results if tool_results else None
     )
     
-    # 调试：打印完整的 Kiro 请求
+    # 调试：打印完整的 Kiro 请求（使用深拷贝避免修改原始请求）
     if tool_results:
+        import copy
         # 打印请求结构（不包括 tools，因为太长）
-        debug_request = {
+        debug_request = copy.deepcopy({
             "conversationState": {
                 "history_len": len(kiro_request.get("conversationState", {}).get("history", [])),
                 "currentMessage": kiro_request.get("conversationState", {}).get("currentMessage", {}),
             }
-        }
-        # 移除 tools 以便打印
+        })
+        # 移除 tools 以便打印（只在 debug_request 中）
         if "userInputMessageContext" in debug_request["conversationState"]["currentMessage"].get("userInputMessage", {}):
             ctx = debug_request["conversationState"]["currentMessage"]["userInputMessage"]["userInputMessageContext"]
             if "tools" in ctx:
