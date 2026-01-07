@@ -133,7 +133,7 @@ def _convert_responses_input_to_kiro(input_data, instructions: str = None):
                 assistant_msg = {
                     "assistantResponseMessage": {
                         "content": text or "I understand.",
-                        "modelId": model_id
+                        "toolUses": []
                     }
                 }
                 if pending_tool_uses:
