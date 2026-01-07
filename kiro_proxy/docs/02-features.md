@@ -14,6 +14,29 @@ Kiro Proxy 支持三种主流 AI API 协议，可以适配不同的客户端：
 
 ---
 
+## 工具调用支持
+
+完整支持 Claude Code 等客户端的工具调用功能：
+
+### 支持的特性
+
+- **Anthropic 工具调用** - `tools` 和 `tool_result` 完整支持
+- **OpenAI 工具调用** - `tools`、`tool_calls`、`tool` 角色消息
+- **tool_choice: required** - 强制使用工具（通过 prompt 注入实现）
+- **web_search 特殊工具** - 自动识别并转换
+- **工具数量限制** - 最多 50 个工具（Kiro API 限制）
+- **描述截断** - 超过 500 字符自动截断
+
+### 历史消息修复
+
+Kiro API 要求消息必须严格交替（user → assistant → user → assistant），代理会自动：
+
+- 检测并修复连续的同角色消息
+- 合并重复的 tool_results
+- 插入占位消息保持交替
+
+---
+
 ## 多账号管理
 
 ### 账号轮询

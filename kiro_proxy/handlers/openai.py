@@ -24,6 +24,8 @@ async def handle_chat_completions(request: Request):
     model = map_model_name(body.get("model", "claude-sonnet-4"))
     messages = body.get("messages", [])
     stream = body.get("stream", False)
+    tools = body.get("tools", None)
+    tool_choice = body.get("tool_choice", None)
     
     if not messages:
         raise HTTPException(400, "messages required")
@@ -45,7 +47,10 @@ async def handle_chat_completions(request: Request):
     if not token:
         raise HTTPException(500, f"Failed to get token for account {account.name}")
     
-    user_content, history = convert_openai_messages_to_kiro(messages, model)
+    # 使用增强的转换函数
+    user_content, history, tool_results, kiro_tools = convert_openai_messages_to_kiro(
+        messages, model, tools, tool_choice
+    )
     
     # 提取最后一条消息中的图片
     images = []
@@ -54,7 +59,12 @@ async def handle_chat_completions(request: Request):
         if last_msg.get("role") == "user":
             _, images = extract_images_from_content(last_msg.get("content", ""))
     
-    kiro_request = build_kiro_request(user_content, model, history, images=images)
+    kiro_request = build_kiro_request(
+        user_content, model, history, 
+        images=images,
+        tools=kiro_tools if kiro_tools else None,
+        tool_results=tool_results if tool_results else None
+    )
     
     # 使用账号的动态 Machine ID
     creds = account.get_credentials()
