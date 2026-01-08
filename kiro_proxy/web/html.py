@@ -914,7 +914,7 @@ async function scanTokens(){
             <div>${t.name}</div>
             <div style="color:var(--muted);font-size:0.75rem">${t.path}</div>
           </div>
-          ${t.already_added?'<span class="badge info">已添加</span>':`<button class="secondary small" onclick="addFromScan('${t.path}','${t.name}')">添加</button>`}
+          ${t.already_added?'<span class="badge info">已添加</span>':`<button class="secondary small" onclick='addFromScan(${JSON.stringify(t.path)},${JSON.stringify(t.name)})'>添加</button>`}
         </div>
       `).join('');
     }else{
