@@ -38,6 +38,7 @@ class ProxyState:
         self.session_locks: Dict[str, str] = {}
         self.session_timestamps: Dict[str, float] = {}
         self.start_time: float = time.time()
+        self.current_port: int = 8080  # 当前运行端口
         self._load_accounts()
     
     def _load_accounts(self):

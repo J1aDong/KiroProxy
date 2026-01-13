@@ -122,6 +122,7 @@ HTML_HEADER = '''
   <div class="status">
     <span class="status-dot" id="statusDot"></span>
     <span id="statusText">检查中...</span>
+    <span id="portInfo" style="margin-left:0.5rem;color:var(--info)"></span>
     <span id="uptime"></span>
   </div>
 </header>
@@ -389,6 +390,20 @@ unset ANTHROPIC_BASE_URL ANTHROPIC_AUTH_TOKEN CLAUDE_CODE_DISABLE_NONESSENTIAL_T
 HTML_SETTINGS = '''
 <div class="panel" id="settings">
   <div class="card">
+    <h3>服务端口</h3>
+    <p style="color:var(--muted);font-size:0.875rem;margin-bottom:1rem">
+      当前服务运行在端口 <strong id="currentPort">--</strong>。修改端口需要重启服务。
+    </p>
+    <div style="display:flex;gap:0.5rem;align-items:center">
+      <input type="number" id="newPort" value="8080" min="1024" max="65535" style="width:120px;padding:0.5rem;border:1px solid var(--border);border-radius:6px;background:var(--card);color:var(--text)">
+      <button class="secondary" onclick="copyRestartCmd()">复制重启命令</button>
+    </div>
+    <p style="color:var(--muted);font-size:0.75rem;margin-top:0.5rem">
+      💡 也可以使用启动器 UI 设置端口（双击 exe 或运行 python run.py）
+    </p>
+  </div>
+
+  <div class="card">
     <h3>请求限速 <button class="secondary small" onclick="loadRateLimitConfig()">刷新</button></h3>
     <p style="color:var(--muted);font-size:0.875rem;margin-bottom:1rem">
       启用后会限制请求频率，并在遇到 429 错误时短暂冷却账号
@@ -601,7 +616,13 @@ async function checkStatus(){
     const r=await fetch('/api/status');
     const d=await r.json();
     $('#statusDot').className='status-dot '+(d.ok?'ok':'err');
-    $('#statusText').textContent=d.ok?'已连接':'未连接';
+    const statusMsg = d.ok ? (d.has_accounts ? '已连接' : '已启动(无账号)') : '未连接';
+    $('#statusText').textContent=statusMsg;
+    if(d.port) {
+      $('#portInfo').textContent='端口 '+d.port;
+      if($('#currentPort'))$('#currentPort').textContent=d.port;
+      if($('#newPort'))$('#newPort').value=d.port;
+    }
     if(d.stats)$('#uptime').textContent='运行 '+formatUptime(d.stats.uptime_seconds);
   }catch(e){
     $('#statusDot').className='status-dot err';
@@ -610,6 +631,13 @@ async function checkStatus(){
 }
 checkStatus();
 setInterval(checkStatus,30000);
+
+function copyRestartCmd(){
+  const port=$('#newPort').value;
+  const isWindows=navigator.platform.indexOf('Win')>-1;
+  const cmd=isWindows?`python run.py ${port}`:`python run.py ${port}`;
+  copy(cmd);
+}
 
 // URLs
 $('#baseUrl').textContent=location.origin;

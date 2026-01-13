@@ -523,6 +523,8 @@ async def api_docs_content(doc_id: str):
 
 def run(port: int = 8080):
     import uvicorn
+    from .core import state
+    state.current_port = port  # 设置当前端口供 WebUI 显示
     print(f"\n{'='*50}")
     print(f"  Kiro API Proxy v1.7.1")
     print(f"  http://localhost:{port}")

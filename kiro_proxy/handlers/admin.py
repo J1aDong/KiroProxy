@@ -17,16 +17,17 @@ from ..auth import start_social_auth, exchange_social_auth_token, cancel_social_
 
 async def get_status():
     """服务状态"""
-    try:
-        with open(TOKEN_PATH) as f:
-            data = json.load(f)
-        return {
-            "ok": True,
-            "expires": data.get("expiresAt"),
-            "stats": state.get_stats()
-        }
-    except Exception as e:
-        return {"ok": False, "error": str(e), "stats": state.get_stats()}
+    stats = state.get_stats()
+    # 服务正在运行则返回 ok=True（不再依赖 TOKEN_PATH 文件）
+    has_accounts = stats["accounts_total"] > 0
+    has_available = stats["accounts_available"] > 0
+    return {
+        "ok": True,  # 服务已启动
+        "has_accounts": has_accounts,
+        "has_available_accounts": has_available,
+        "port": state.current_port,
+        "stats": stats
+    }
 
 
 async def get_stats():
