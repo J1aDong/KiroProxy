@@ -1602,8 +1602,105 @@ function _(key) {{ return I18N[key] || key; }}
 </div>
 '''
 
-    # 使用原始 HTML 部分，只替换 header
-    html_body = html_header + HTML_HELP + HTML_FLOWS + HTML_MONITOR + HTML_ACCOUNTS + HTML_LOGS + HTML_API + HTML_SETTINGS
+    # 翻译静态 HTML 内容
+    translations = {
+        # Flows
+        '>Flow 统计 <': f'>{t("flows.title")} <',
+        '>流量监控<': f'>{t("flows.monitor")}<',
+        '>全部协议<': f'>{t("flows.allProtocols")}<',
+        '>全部状态<': f'>{t("flows.allStates")}<',
+        '>完成<': f'>{t("flows.completed")}<',
+        '>错误<': f'>{t("flows.error")}<',
+        '>流式中<': f'>{t("flows.streaming")}<',
+        '>等待中<': f'>{t("flows.pending")}<',
+        'placeholder="搜索内容..."': f'placeholder="{t("flows.searchPlaceholder")}"',
+        '>Flow 详情 <': f'>{t("flows.detail")} <',
+        '>搜索<': f'>{t("common.search")}<',
+        '>导出<': f'>{t("common.export")}<',
+        '>刷新<': f'>{t("common.refresh")}<',
+        '>关闭<': f'>{t("common.close")}<',
+        # Monitor
+        '>服务状态 <': f'>{t("monitor.serviceStatus")} <',
+        '>配额状态<': f'>{t("monitor.quotaStatus")}<',
+        '>速度测试<': f'>{t("monitor.speedTest")}<',
+        '>开始测试<': f'>{t("monitor.startTest")}<',
+        # Accounts
+        '>账号管理<': f'>{t("accounts.title")}<',
+        '>在线登录<': f'>{t("accounts.onlineLogin")}<',
+        '>远程登录链接<': f'>{t("accounts.remoteLogin")}<',
+        '>扫描 Token<': f'>{t("accounts.scan")}<',
+        '>手动添加<': f'>{t("accounts.manualAdd")}<',
+        '>导出账号<': f'>{t("accounts.exportAccounts")}<',
+        '>导入账号<': f'>{t("accounts.importAccounts")}<',
+        '>刷新 Token<': f'>{t("accounts.refreshAll")}<',
+        '>选择登录方式 <': f'>{t("accounts.selectLoginMethod")} <',
+        '> 无痕/隐私模式打开': f'> {t("accounts.incognitoMode")}',
+        '>选择浏览器：<': f'>{t("accounts.selectBrowser")}<',
+        '>选择登录方式：<': f'>{t("accounts.selectLoginType")}<',
+        '>Kiro 在线登录 <': f'>{t("accounts.kiroOnlineLogin")} <',
+        '>取消<': f'>{t("common.cancel")}<',
+        '>远程登录链接 <': f'>{t("accounts.remoteLogin")} <',
+        '>手动添加 Token <': f'>{t("accounts.manualAddToken")} <',
+        '>账号名称<': f'>{t("accounts.accountName")}<',
+        'placeholder="我的账号"': f'placeholder="{t("accounts.myAccount")}"',
+        '>Access Token *<': f'>{t("accounts.accessToken")}<',
+        'placeholder="粘贴 accessToken..."': f'placeholder="{t("accounts.pasteAccessToken")}"',
+        '>Refresh Token（可选）<': f'>{t("accounts.refreshTokenOptional")}<',
+        'placeholder="粘贴 refreshToken..."': f'placeholder="{t("accounts.pasteRefreshToken")}"',
+        '>Token 可从 ~/.aws/sso/cache/ 目录下的 JSON 文件中获取<': f'>{t("accounts.tokenHint")}<',
+        '>添加账号<': f'>{t("accounts.add")}<',
+        '>扫描结果<': f'>{t("accounts.scanResults")}<',
+        # Logs
+        '>请求日志 <': f'>{t("logs.title")} <',
+        '>清空<': f'>{t("logs.clear")}<',
+        '>时间<': f'>{t("logs.time")}<',
+        '>模型<': f'>{t("logs.model")}<',
+        '>账号<': f'>{t("logs.account")}<',
+        '>状态<': f'>{t("status.checking").split("...")[0] if "..." in t("status.checking") else "Status"}<',
+        '>耗时<': f'>{t("logs.duration")}<',
+        # Settings - Port
+        '>服务端口<': f'>{t("settings.port")}<',
+        '>当前服务运行在端口<': f'>{t("settings.portDesc")}<',
+        '>修改端口需要重启服务<': f'>{t("settings.portChange")}<',
+        '>复制重启命令<': f'>{t("settings.copyRestartCmd")}<',
+        '>💡 也可以使用启动器 UI 设置端口（双击 exe 或运行 python run.py）<': f'>💡 {t("settings.portTip")}<',
+        # Settings - Rate Limit
+        '>请求限速 <': f'>{t("settings.rateLimit")} <',
+        '>启用后会限制请求频率，并在遇到 429 错误时短暂冷却账号<': f'>{t("settings.rateLimitDesc")}<',
+        '><strong>启用限速</strong>（关闭时 429 错误不会导致账号冷却）<': f'><strong>{t("settings.enableRateLimit")}</strong>（{t("settings.rateLimitOff")}）<',
+        '>最小请求间隔（秒）<': f'>{t("settings.minInterval")}<',
+        '>每账号每分钟最大请求<': f'>{t("settings.maxPerMinute")}<',
+        '>全局每分钟最大请求<': f'>{t("settings.globalMaxPerMinute")}<',
+        '>429 冷却时间（秒）<': f'>{t("settings.cooldownSeconds")}<',
+        # Settings - History
+        '>历史消息管理 <': f'>{t("settings.historyManagement")} <',
+        '>处理 Kiro API 的输入长度限制（CONTENT_LENGTH_EXCEEDS_THRESHOLD 错误）<': f'>{t("settings.historyDesc")}<',
+        '>启用的策略（可多选）：<': f'>{t("settings.enabledStrategies")}<',
+        '><strong>自动截断</strong> - 发送前优先保留最新上下文并摘要前文<': f'><strong>{t("settings.autoTruncate")}</strong> - {t("settings.autoTruncateDesc")}<',
+        '><strong>智能摘要</strong> - 用 AI 生成早期对话摘要（需额外 API 调用）<': f'><strong>{t("settings.smartSummary")}</strong> - {t("settings.smartSummaryDesc")}<',
+        '><strong>错误重试</strong> - 遇到长度错误时截断后重试 <span style="color:var(--warn);font-size:0.75rem">（推荐）</span><': f'><strong>{t("settings.errorRetry")}</strong> - {t("settings.errorRetryDesc")} <span style="color:var(--warn);font-size:0.75rem">({t("settings.recommended")})</span><',
+        '><strong>预估检测</strong> - 发送前预估 token 数量<': f'><strong>{t("settings.preEstimate")}</strong> - {t("settings.preEstimateDesc")}<',
+        '>最大消息数<': f'>{t("settings.maxMessages")}<',
+        '>最大字符数<': f'>{t("settings.maxChars")}<',
+        '>重试时保留消息数<': f'>{t("settings.retryMaxMessages")}<',
+        '>最大重试次数<': f'>{t("settings.maxRetries")}<',
+        '>智能摘要选项：<': f'>{t("settings.summaryOptions")}<',
+        '>保留最近消息数<': f'>{t("settings.keepRecentMessages")}<',
+        '>触发摘要阈值（字符）<': f'>{t("settings.summaryThreshold")}<',
+        '>摘要缓存<': f'>{t("settings.summaryCache")}<',
+        '>启用摘要缓存<': f'>{t("settings.enableSummaryCache")}<',
+        '>缓存刷新消息增量<': f'>{t("settings.cacheDeltaMessages")}<',
+        '>缓存刷新字符增量<': f'>{t("settings.cacheDeltaChars")}<',
+        '>缓存最大复用秒数<': f'>{t("settings.cacheMaxAge")}<',
+        '>截断时添加警告信息<': f'>{t("settings.addWarningHeader")}<',
+    }
+    
+    # 组装并翻译 HTML
+    html_content = HTML_HELP + HTML_FLOWS + HTML_MONITOR + HTML_ACCOUNTS + HTML_LOGS + HTML_API + HTML_SETTINGS
+    for zh, translated in translations.items():
+        html_content = html_content.replace(zh, translated)
+    
+    html_body = html_header + html_content
     
     return f'''<!DOCTYPE html>
 <html lang="{lang}">
