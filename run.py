@@ -2,6 +2,45 @@
 """Kiro API Proxy 启动脚本"""
 import sys
 
+# ============================================================
+# PyInstaller 显式导入块
+# 这些导入确保 PyInstaller 能够检测到所有必要的模块
+# 不要删除这些导入，即使 IDE 显示它们未被使用
+# ============================================================
+import kiro_proxy
+import kiro_proxy.main
+import kiro_proxy.launcher
+import kiro_proxy.cli
+import kiro_proxy.config
+import kiro_proxy.converters
+import kiro_proxy.web
+import kiro_proxy.web.html
+import kiro_proxy.web.i18n
+import kiro_proxy.core
+import kiro_proxy.core.account
+import kiro_proxy.core.state
+import kiro_proxy.core.persistence
+import kiro_proxy.core.scheduler
+import kiro_proxy.core.stats
+import kiro_proxy.core.retry
+import kiro_proxy.core.browser
+import kiro_proxy.core.flow_monitor
+import kiro_proxy.core.usage
+import kiro_proxy.handlers
+import kiro_proxy.handlers.anthropic
+import kiro_proxy.handlers.openai
+import kiro_proxy.handlers.responses
+import kiro_proxy.handlers.gemini
+import kiro_proxy.handlers.admin
+import kiro_proxy.credential
+import kiro_proxy.credential.types
+import kiro_proxy.credential.fingerprint
+import kiro_proxy.credential.quota
+import kiro_proxy.credential.refresher
+import kiro_proxy.auth
+import kiro_proxy.auth.device_flow
+# ============================================================
+
 if __name__ == "__main__":
     # CLI 子命令模式
     if len(sys.argv) > 1 and sys.argv[1] in ("accounts", "login", "status", "serve"):

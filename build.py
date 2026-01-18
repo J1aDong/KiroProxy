@@ -15,7 +15,7 @@ import subprocess
 from pathlib import Path
 
 APP_NAME = "KiroProxy"
-VERSION = "1.7.9"
+VERSION = "1.7.10"
 MAIN_SCRIPT = "run.py"
 ICON_DIR = Path("assets")
 
