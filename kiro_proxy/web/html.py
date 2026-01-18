@@ -1760,6 +1760,17 @@ function _(key) {{ return I18N[key] || key; }}
         '⭐⭐⭐⭐⭐ 最强': f'⭐⭐⭐⭐⭐ {"Strongest" if lang == "en" else "最强"}',
         '🤖 自动': f'🤖 {"Auto" if lang == "en" else "自动"}',
         '>💡 直接使用 Kiro 模型名（如 claude-sonnet-4）或任意映射名称均可<': f'>💡 {"Use Kiro model name (e.g. claude-sonnet-4) or any mapped name" if lang == "en" else "直接使用 Kiro 模型名（如 claude-sonnet-4）或任意映射名称均可"}<',
+        # Settings - Strategy explanation box
+        '<strong>策略说明：</strong>': f'<strong>{"Strategy Guide:" if lang == "en" else "策略说明："}</strong>',
+        '• <strong>自动截断</strong>：每次请求前优先保留最新上下文并摘要前文，必要时按数量/字符截断': f'• <strong>{"Auto Truncate" if lang == "en" else "自动截断"}</strong>{"：" if lang == "zh" else ": "}{"Prioritize recent context, truncate by count/chars when needed" if lang == "en" else "每次请求前优先保留最新上下文并摘要前文，必要时按数量/字符截断"}',
+        '• <strong>智能摘要</strong>：用 AI 生成早期对话摘要，保留关键信息（需额外 API 调用，增加延迟）': f'• <strong>{"Smart Summary" if lang == "en" else "智能摘要"}</strong>{"：" if lang == "zh" else ": "}{"Use AI to summarize early conversations (extra API call, adds latency)" if lang == "en" else "用 AI 生成早期对话摘要，保留关键信息（需额外 API 调用，增加延迟）"}',
+        '• <strong>错误重试</strong>：收到长度超限错误后，截断历史消息并自动重试': f'• <strong>{"Error Retry" if lang == "en" else "错误重试"}</strong>{"：" if lang == "zh" else ": "}{"Truncate and auto-retry on length error" if lang == "en" else "收到长度超限错误后，截断历史消息并自动重试"}',
+        '• <strong>预估检测</strong>：发送前估算 token 数量，超过阈值则预先截断': f'• <strong>{"Pre-estimate" if lang == "en" else "预估检测"}</strong>{"：" if lang == "zh" else ": "}{"Estimate tokens before sending, pre-truncate if exceeds" if lang == "en" else "发送前估算 token 数量，超过阈值则预先截断"}',
+        '推荐组合：<strong>错误重试</strong>（默认）或 <strong>智能摘要 + 错误重试</strong>': f'{"Recommended: " if lang == "en" else "推荐组合："}<strong>{"Error Retry" if lang == "en" else "错误重试"}</strong>{"(default) or " if lang == "en" else "（默认）或 "}<strong>{"Smart Summary + Error Retry" if lang == "en" else "智能摘要 + 错误重试"}</strong>',
+        # API page - comments and tips
+        '# 写入 Claude Code 配置文件': f'# {"Write to Claude Code config file" if lang == "en" else "写入 Claude Code 配置文件"}',
+        '# 删除 Claude Code 配置': f'# {"Delete Claude Code config" if lang == "en" else "删除 Claude Code 配置"}',
+        '使用 <code>ANTHROPIC_AUTH_TOKEN</code> + <code>CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1</code> 可跳过登录': f'{"Use " if lang == "en" else "使用 "}<code>ANTHROPIC_AUTH_TOKEN</code> + <code>CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1</code> {"to skip login" if lang == "en" else "可跳过登录"}',
     }
     
     # 组装并翻译 HTML
