@@ -15,7 +15,7 @@ import subprocess
 from pathlib import Path
 
 APP_NAME = "KiroProxy"
-VERSION = "1.7.8"
+VERSION = "1.7.9"
 MAIN_SCRIPT = "run.py"
 ICON_DIR = Path("assets")
 
@@ -52,90 +52,58 @@ def build_app():
     ensure_pyinstaller()
     clean_build()
     
-    args = [
-        sys.executable, "-m", "PyInstaller",
-        "--name", APP_NAME,
-        "--onefile",
-        "--clean",
-        "--noconfirm",
-    ]
+    # Check if spec file exists
+    spec_file = Path("KiroProxy.spec")
+    if spec_file.exists():
+        print(f"[OK] Using spec file: {spec_file}")
+        args = [
+            sys.executable, "-m", "PyInstaller",
+            "--clean",
+            "--noconfirm",
+            str(spec_file),
+        ]
+    else:
+        print(f"[!] Spec file not found, using command line args")
+        args = [
+            sys.executable, "-m", "PyInstaller",
+            "--name", APP_NAME,
+            "--onefile",
+            "--clean",
+            "--noconfirm",
+        ]
+        
+        icon_file = None
+        if platform == "windows" and (ICON_DIR / "icon.ico").exists():
+            icon_file = ICON_DIR / "icon.ico"
+        elif platform == "macos" and (ICON_DIR / "icon.icns").exists():
+            icon_file = ICON_DIR / "icon.icns"
+        elif (ICON_DIR / "icon.png").exists():
+            icon_file = ICON_DIR / "icon.png"
+        
+        if icon_file:
+            args.extend(["--icon", str(icon_file)])
+        
+        # 添加资源文件打包
+        if (ICON_DIR).exists():
+            sep = ";" if platform == "windows" else ":"
+            args.extend(["--add-data", f"{ICON_DIR}{sep}assets"])
+        
+        # 添加文档和 i18n 文件
+        docs_dir = Path("kiro_proxy/docs")
+        i18n_dir = Path("kiro_proxy/web/i18n")
+        if docs_dir.exists():
+            sep = ";" if platform == "windows" else ":"
+            args.extend(["--add-data", f"{docs_dir}{sep}kiro_proxy/docs"])
+        if i18n_dir.exists():
+            sep = ";" if platform == "windows" else ":"
+            args.extend(["--add-data", f"{i18n_dir}{sep}kiro_proxy/web/i18n"])
+        
+        # 收集整个 kiro_proxy 包
+        args.extend(["--collect-submodules", "kiro_proxy"])
+        args.extend(["--collect-data", "kiro_proxy"])
+        
+        args.append(MAIN_SCRIPT)
     
-    icon_file = None
-    if platform == "windows" and (ICON_DIR / "icon.ico").exists():
-        icon_file = ICON_DIR / "icon.ico"
-    elif platform == "macos" and (ICON_DIR / "icon.icns").exists():
-        icon_file = ICON_DIR / "icon.icns"
-    elif (ICON_DIR / "icon.png").exists():
-        icon_file = ICON_DIR / "icon.png"
-    
-    if icon_file:
-        args.extend(["--icon", str(icon_file)])
-        print(f"[OK] Using icon: {icon_file}")
-    
-    # 添加资源文件打包
-    if (ICON_DIR).exists():
-        if platform == "windows":
-            args.extend(["--add-data", f"{ICON_DIR};assets"])
-        else:
-            args.extend(["--add-data", f"{ICON_DIR}:assets"])
-        print(f"[OK] Adding assets directory")
-    
-    # 添加文档文件打包
-    docs_dir = Path("kiro_proxy/docs")
-    if docs_dir.exists():
-        if platform == "windows":
-            args.extend(["--add-data", f"{docs_dir};kiro_proxy/docs"])
-        else:
-            args.extend(["--add-data", f"{docs_dir}:kiro_proxy/docs"])
-        print(f"[OK] Adding docs directory")
-    
-    # 添加 i18n 语言文件打包
-    i18n_dir = Path("kiro_proxy/web/i18n")
-    if i18n_dir.exists():
-        if platform == "windows":
-            args.extend(["--add-data", f"{i18n_dir};kiro_proxy/web/i18n"])
-        else:
-            args.extend(["--add-data", f"{i18n_dir}:kiro_proxy/web/i18n"])
-        print(f"[OK] Adding i18n directory")
-    
-    hidden_imports = [
-        "uvicorn.logging",
-        "uvicorn.protocols.http",
-        "uvicorn.protocols.http.auto",
-        "uvicorn.protocols.http.h11_impl",
-        "uvicorn.protocols.websockets",
-        "uvicorn.protocols.websockets.auto",
-        "uvicorn.lifespan",
-        "uvicorn.lifespan.on",
-        "httpx",
-        "httpx._transports",
-        "httpx._transports.default",
-        "anyio",
-        "anyio._backends",
-        "anyio._backends._asyncio",
-        "kiro_proxy",
-        "kiro_proxy.web",
-        "kiro_proxy.web.html",
-        "kiro_proxy.web.i18n",
-        "kiro_proxy.core",
-        "kiro_proxy.handlers",
-        "kiro_proxy.credential",
-        "kiro_proxy.auth",
-    ]
-    for imp in hidden_imports:
-        args.extend(["--hidden-import", imp])
-    
-    # 使用自定义 hook 目录
-    hooks_dir = Path("hooks")
-    if hooks_dir.exists():
-        args.extend(["--additional-hooks-dir", str(hooks_dir)])
-        print(f"[OK] Using custom hooks directory")
-    
-    # 收集整个 kiro_proxy 包的所有子模块
-    args.extend(["--collect-submodules", "kiro_proxy"])
-    args.extend(["--collect-data", "kiro_proxy"])
-    
-    args.append(MAIN_SCRIPT)
     args = [a for a in args if a]
     
     print(f"[..] Running: {' '.join(args)}\n")
