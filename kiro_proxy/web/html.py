@@ -1494,12 +1494,12 @@ async function loadRateLimitConfig(){
     const stats=d.stats||{};
     $('#rateLimitStats').innerHTML=`
       <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:0.5rem">
-        <span>状态: <span class="badge ${d.enabled?'success':'warn'}">${d.enabled?'已启用':'已禁用'}</span></span>
-        <span>全局 RPM: ${stats.global_rpm||0}</span>
-        <span>429 冷却: ${d.enabled?(d.quota_cooldown_seconds||30)+'秒':'禁用'}</span>
+        <span>${_('settings.status')}: <span class="badge ${d.enabled?'success':'warn'}">${d.enabled?_('common.enabled'):_('common.disabled')}</span></span>
+        <span>${_('settings.globalRPM')}: ${stats.global_rpm||0}</span>
+        <span>${_('settings.cooldownLabel')}: ${d.enabled?(d.quota_cooldown_seconds||30)+_('time.seconds'):_('common.disabled')}</span>
       </div>
     `;
-  }catch(e){console.error('加载限速配置失败:',e)}
+  }catch(e){console.error('Load rate limit config failed:',e)}
 }
 
 async function updateRateLimitConfig(){
@@ -1513,7 +1513,7 @@ async function updateRateLimitConfig(){
   try{
     await fetch('/api/settings/rate-limit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(config)});
     loadRateLimitConfig();
-  }catch(e){console.error('保存限速配置失败:',e)}
+  }catch(e){console.error('Save rate limit config failed:',e)}
 }
 
 // 页面加载时加载设置
@@ -1603,6 +1603,7 @@ const I18N = {{
   "logs.status": "{js_escape(t('logs.status') if t('logs.status') != 'logs.status' else 'Status')}",
   "settings.status": "{js_escape(t('settings.status') if t('settings.status') != 'settings.status' else 'Status')}",
   "settings.globalRPM": "{js_escape(t('settings.globalRPM') if t('settings.globalRPM') != 'settings.globalRPM' else 'Global RPM')}",
+  "settings.cooldownLabel": "{js_escape(t('settings.cooldownLabel') if t('settings.cooldownLabel') != 'settings.cooldownLabel' else '429 Cooldown')}",
   "settings.cooldownDisabled": "{js_escape(t('settings.cooldownDisabled') if t('settings.cooldownDisabled') != 'settings.cooldownDisabled' else '429 Cooldown: Disabled')}",
   "docs.loadFailed": "{js_escape(t('docs.loadFailed') if t('docs.loadFailed') != 'docs.loadFailed' else 'Failed to load document')}"
 }};
@@ -1686,17 +1687,17 @@ function _(key) {{ return I18N[key] || key; }}
         '>时间<': f'>{t("logs.time")}<',
         '>模型<': f'>{t("logs.model")}<',
         '>账号<': f'>{t("logs.account")}<',
-        '>状态<': f'>{t("status.checking").split("...")[0] if "..." in t("status.checking") else "Status"}<',
+        '>状态<': f'>{"Status" if lang == "en" else "状态"}<',
         '>耗时<': f'>{t("logs.duration")}<',
         # Settings - Port
         '>服务端口<': f'>{t("settings.port")}<',
-        '>当前服务运行在端口<': f'>{t("settings.portDesc")}<',
-        '>修改端口需要重启服务<': f'>{t("settings.portChange")}<',
-        '>复制重启命令<': f'>{t("settings.copyRestartCmd")}<',
-        '>💡 也可以使用启动器 UI 设置端口（双击 exe 或运行 python run.py）<': f'>💡 {t("settings.portTip")}<',
+        '当前服务运行在端口': f'{"Current service running on port" if lang == "en" else "当前服务运行在端口"}',
+        '。修改端口需要重启服务。': f'{". Changing port requires restart." if lang == "en" else "。修改端口需要重启服务。"}',
+        '>复制重启命令<': f'>{"Copy Restart Command" if lang == "en" else "复制重启命令"}<',
+        '💡 也可以使用启动器 UI 设置端口（双击 exe 或运行 python run.py）': f'💡 {"You can also set port via launcher UI (double-click exe or run python run.py)" if lang == "en" else "也可以使用启动器 UI 设置端口（双击 exe 或运行 python run.py）"}',
         # Settings - Rate Limit
-        '>请求限速 <': f'>{t("settings.rateLimit")} <',
-        '>启用后会限制请求频率，并在遇到 429 错误时短暂冷却账号<': f'>{t("settings.rateLimitDesc")}<',
+        '>请求限速 <': f'>{"Rate Limiting" if lang == "en" else "请求限速"} <',
+        '启用后会限制请求频率，并在遇到 429 错误时短暂冷却账号': f'{"When enabled, limits request frequency and briefly cools down accounts on 429 errors" if lang == "en" else "启用后会限制请求频率，并在遇到 429 错误时短暂冷却账号"}',
         '><strong>启用限速</strong>（关闭时 429 错误不会导致账号冷却）<': f'><strong>{t("settings.enableRateLimit")}</strong>（{t("settings.rateLimitOff")}）<',
         '>最小请求间隔（秒）<': f'>{t("settings.minInterval")}<',
         '>每账号每分钟最大请求<': f'>{t("settings.maxPerMinute")}<',
@@ -1726,10 +1727,10 @@ function _(key) {{ return I18N[key] || key; }}
         # Logs - path header
         '>路径<': f'>{t("logs.path") if t("logs.path") != "logs.path" else "Path"}<',
         # Accounts - login methods
-        '>登录方式<': f'>{t("accounts.loginMethods") if t("accounts.loginMethods") != "accounts.loginMethods" else "Login Methods"}<',
-        '><strong>在线登录</strong> - 本机浏览器授权 | <strong>远程登录链接</strong> - 生成链接在其他机器授权<': f'><strong>{t("accounts.onlineLogin")}</strong> - {t("accounts.onlineLoginDesc") if t("accounts.onlineLoginDesc") != "accounts.onlineLoginDesc" else "Local browser auth"} | <strong>{t("accounts.remoteLogin")}</strong> - {t("accounts.remoteLoginDesc") if t("accounts.remoteLoginDesc") != "accounts.remoteLoginDesc" else "Generate link for other machines"}<',
-        '><strong>扫描 Token</strong> - 从 Kiro IDE 扫描 | <strong>手动添加</strong> - 直接粘贴 Token<': f'><strong>{t("accounts.scan")}</strong> - {t("accounts.scanDesc") if t("accounts.scanDesc") != "accounts.scanDesc" else "Scan from Kiro IDE"} | <strong>{t("accounts.manualAdd")}</strong> - {t("accounts.manualAddDesc") if t("accounts.manualAddDesc") != "accounts.manualAddDesc" else "Paste Token directly"}<',
-        '><strong>导入导出</strong> - 跨机器迁移账号配置<': f'><strong>{t("accounts.exportImport") if t("accounts.exportImport") != "accounts.exportImport" else "Export/Import"}</strong> - {t("accounts.exportImportDesc") if t("accounts.exportImportDesc") != "accounts.exportImportDesc" else "Migrate configs across machines"}<',
+        '>登录方式<': f'>{"Login Methods" if lang == "en" else "登录方式"}<',
+        '<strong>在线登录</strong> - 本机浏览器授权 | <strong>远程登录链接</strong> - 生成链接在其他机器授权': f'<strong>{"Online Login" if lang == "en" else "在线登录"}</strong> - {"Local browser auth" if lang == "en" else "本机浏览器授权"} | <strong>{"Remote Login Link" if lang == "en" else "远程登录链接"}</strong> - {"Generate link for other machines" if lang == "en" else "生成链接在其他机器授权"}',
+        '<strong>扫描 Token</strong> - 从 Kiro IDE 扫描 | <strong>手动添加</strong> - 直接粘贴 Token': f'<strong>{"Scan Tokens" if lang == "en" else "扫描 Token"}</strong> - {"Scan from Kiro IDE" if lang == "en" else "从 Kiro IDE 扫描"} | <strong>{"Manual Add" if lang == "en" else "手动添加"}</strong> - {"Paste Token directly" if lang == "en" else "直接粘贴 Token"}',
+        '<strong>导入导出</strong> - 跨机器迁移账号配置': f'<strong>{"Export/Import" if lang == "en" else "导入导出"}</strong> - {"Migrate configs across machines" if lang == "en" else "跨机器迁移账号配置"}',
         # API page
         '>API 端点<': f'>{"API Endpoints" if lang == "en" else "API 端点"}<',
         '>支持 OpenAI、Anthropic、Gemini 三种协议<': f'>{"Supports OpenAI, Anthropic, Gemini protocols" if lang == "en" else "支持 OpenAI、Anthropic、Gemini 三种协议"}<',
