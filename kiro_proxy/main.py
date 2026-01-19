@@ -13,7 +13,7 @@ from .config import MODELS_URL
 from .core import state, scheduler, stats_manager
 from .handlers import anthropic, openai, gemini, admin
 from .handlers import responses as responses_handler
-from .web.webui import get_html_page
+from .web import get_html_page
 from .credential import generate_machine_id, get_kiro_version
 
 

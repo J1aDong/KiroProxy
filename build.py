@@ -101,6 +101,11 @@ def build_app():
         if i18n_dir.exists():
             sep = ";" if platform == "windows" else ":"
             args.extend(["--add-data", f"{i18n_dir}{sep}kiro_proxy/web/i18n"])
+
+        webui_file = Path("kiro_proxy/web/webui.py")
+        if webui_file.exists():
+            sep = ";" if platform == "windows" else ":"
+            args.extend(["--add-data", f"{webui_file}{sep}kiro_proxy/web"])
         
         # 收集整个 kiro_proxy 包
         args.extend(["--collect-submodules", "kiro_proxy"])

@@ -51,6 +51,7 @@ datas = [
     ('assets', 'assets'),
     ('kiro_proxy/docs', 'kiro_proxy/docs'),
     ('kiro_proxy/web/i18n', 'kiro_proxy/web/i18n'),
+    ('kiro_proxy/web/webui.py', 'kiro_proxy/web'),
 ]
 
 # Hidden imports for dependencies
