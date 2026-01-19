@@ -1772,7 +1772,7 @@ function _(key) {{ return I18N[key] || key; }}
 <body>
 <div class="container">
 {html_body}
-<div class="footer">Kiro API Proxy v1.7.2</div>
+<div class="footer">Kiro API Proxy v1.7.16</div>
 </div>
 <script>
 {js_i18n}
@@ -1797,7 +1797,7 @@ HTML_PAGE = get_html_page() if False else f'''<!DOCTYPE html>
 <body>
 <div class="container">
 {HTML_BODY}
-<div class="footer">Kiro API Proxy v1.7.2</div>
+<div class="footer">Kiro API Proxy v1.7.16</div>
 </div>
 <script>
 {JS_SCRIPTS}

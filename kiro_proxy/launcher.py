@@ -94,7 +94,7 @@ def launch_with_ui():
     title_label.pack(pady=(0, 5))
     
     # 版本
-    version_label = ttk.Label(main_frame, text="v1.7.1", foreground="gray")
+    version_label = ttk.Label(main_frame, text="v1.7.16", foreground="gray")
     version_label.pack(pady=(0, 20))
     
     # 端口设置框架
